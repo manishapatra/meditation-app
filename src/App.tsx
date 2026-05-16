@@ -17,14 +17,22 @@ function Loading() {
     return () => clearTimeout(t)
   }, [])
 
-  const reset = async () => {
+  // Synchronous escape hatch — does not await Supabase (which may itself be hanging).
+  const reset = () => {
+    supabase.auth.signOut().catch(() => {
+      /* fire-and-forget */
+    })
     try {
-      await supabase.auth.signOut()
+      localStorage.clear()
     } catch {
       /* ignore */
     }
-    localStorage.clear()
-    window.location.reload()
+    try {
+      sessionStorage.clear()
+    } catch {
+      /* ignore */
+    }
+    window.location.replace(window.location.origin + '/auth')
   }
 
   return (
