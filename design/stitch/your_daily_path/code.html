@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,700;1,400&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "primary-container": "#1b3b5a",
+                        "secondary-fixed-dim": "#bdcab9",
+                        "surface-container-low": "#f5f3f3",
+                        "tertiary": "#26231e",
+                        "secondary": "#556254",
+                        "on-surface-variant": "#43474d",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#3e4a3d",
+                        "primary-fixed": "#d1e4ff",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1b1c1c",
+                        "tertiary-fixed-dim": "#cbc6bd",
+                        "on-secondary-fixed": "#131e13",
+                        "on-secondary-container": "#5a6658",
+                        "on-primary-container": "#87a5ca",
+                        "tertiary-container": "#3b3933",
+                        "on-primary-fixed-variant": "#2a4968",
+                        "surface-tint": "#436182",
+                        "surface-container-high": "#eae8e7",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c3c6ce",
+                        "on-background": "#1b1c1c",
+                        "inverse-surface": "#303030",
+                        "inverse-primary": "#abc9ef",
+                        "surface-dim": "#dbd9d9",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#abc9ef",
+                        "inverse-on-surface": "#f2f0f0",
+                        "background": "#fbf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#fbf9f8",
+                        "surface": "#fbf9f8",
+                        "on-tertiary-container": "#a7a29a",
+                        "on-tertiary-fixed-variant": "#494640",
+                        "secondary-fixed": "#d9e6d5",
+                        "on-primary-fixed": "#001d35",
+                        "tertiary-fixed": "#e7e2d9",
+                        "surface-variant": "#e4e2e2",
+                        "outline": "#73777e",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#1d1b16",
+                        "primary": "#002542",
+                        "surface-container-highest": "#e4e2e2",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#d6e3d2",
+                        "surface-container": "#efeded"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin-mobile": "24px",
+                        "margin-desktop": "64px",
+                        "gutter": "16px",
+                        "section-gap": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Noto Serif"],
+                        "headline-lg": ["Noto Serif"],
+                        "label-sm": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "headline-xl": ["Noto Serif"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .organic-shape {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-32">
+<!-- TopAppBar -->
+<nav class="fixed top-0 left-0 w-full z-50 bg-stone-50/80 backdrop-blur-md shadow-[0_4px_20px_-10px_rgba(27,59,90,0.05)] border-none">
+<div class="flex justify-between items-center w-full px-8 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-blue-900 text-3xl" data-icon="self_improvement">self_improvement</span>
+<span class="font-serif italic text-2xl text-blue-900">Stillness</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-blue-900 font-bold font-serif tracking-wide text-lg hover:opacity-80 transition-opacity ease-in-out duration-500" href="#">Today</a>
+<a class="text-stone-400 font-serif tracking-wide text-lg hover:opacity-80 transition-opacity ease-in-out duration-500" href="#">Journal</a>
+<a class="text-stone-400 font-serif tracking-wide text-lg hover:opacity-80 transition-opacity ease-in-out duration-500" href="#">Path</a>
+<a class="text-stone-400 font-serif tracking-wide text-lg hover:opacity-80 transition-opacity ease-in-out duration-500" href="#">Growth</a>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="minimalist portrait of a serene person with soft lighting and natural skin textures on a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDefKTT37CmetTd7B2SREwtPF_0TY8TPvIqiVrbZi_SPSvOPqARx9JwOeZ0lw4_ld9dcWNxdfD5So8L0cSXG2zetMpEwDxVv_ptqblcqSc_RfmfxlpYfctHRPnYeVhisbyFX7S1XDpYI6-Upwz6-kPgVlq_uKvZZdBHGwB2YL92jV_2nfgEXggt1jWrHugmi2RcKbXX7M-yLSl8IJ-BvRPgujMnLSdoh4xYMppvpGQIyWJVUIvcaXlc_as1JZcbknbDyWSWECtfbcs"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="max-w-5xl mx-auto px-6 pt-32 md:pt-40">
+<!-- Hero Section -->
+<header class="text-center mb-16 space-y-4">
+<p class="font-label-md text-secondary tracking-[0.2em] uppercase">Day 12 of your journey</p>
+<h1 class="font-headline-xl text-primary max-w-2xl mx-auto">Welcome to the quiet space of your morning.</h1>
+<div class="flex justify-center pt-8">
+<button class="bg-primary text-on-primary px-10 py-5 rounded-full font-headline-md shadow-lg hover:shadow-xl transition-all duration-500 group flex items-center gap-3">
+                    Start Practice
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Pranayama Session Card -->
+<div class="md:col-span-7 group relative overflow-hidden rounded-[2rem] bg-secondary-container p-8 min-h-[400px] flex flex-col justify-end transition-all duration-700 hover:shadow-2xl hover:shadow-secondary/10">
+<div class="absolute top-0 right-0 p-8">
+<div class="w-16 h-16 bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="air">air</span>
+</div>
+</div>
+<div class="relative z-10 space-y-4">
+<div class="flex gap-2">
+<span class="px-4 py-1 rounded-full bg-white/60 text-secondary font-label-sm">8 MIN</span>
+<span class="px-4 py-1 rounded-full bg-white/60 text-secondary font-label-sm">ENERGIZING</span>
+</div>
+<h2 class="font-headline-lg text-primary">Nadi Shodhana</h2>
+<p class="font-body-md text-on-secondary-container max-w-md">Alternate nostril breathing to balance your nervous system and clear the mental fog.</p>
+</div>
+<div class="absolute inset-0 z-0 opacity-20 bg-gradient-to-br from-transparent to-secondary transition-opacity group-hover:opacity-30"></div>
+<!-- Abstract organic graphic element -->
+<div class="absolute -bottom-20 -right-20 w-80 h-80 bg-white/20 organic-shape blur-3xl animate-pulse"></div>
+</div>
+<!-- Meditation Voiceover Card -->
+<div class="md:col-span-5 group rounded-[2rem] bg-surface-container border border-stone-100 p-8 flex flex-col justify-between transition-all duration-700 hover:-translate-y-1">
+<div class="space-y-6">
+<div class="w-full h-48 rounded-2xl overflow-hidden shadow-sm">
+<img alt="Meditation cover" class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-1000" data-alt="abstract soft focus photography of sunlight filtering through morning mist in a forest with muted earth tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgjV7uDoyW9nyA-xNiaBTnzELrzH3JV4Ld9qexg54UmjN3OajdLMLq3b24DXi4xCJGMYA0REK1rciH3LPkHVPJOqIJFxL8M182T41SvddBZIYLS6TMb7TSzYKEJdOCxt3CJMPf32nw9wMmin6SvfPsDzRP4ghHDYap19qhgufFr-HPpI2SkJm5zyfC-J3QYJ7rRQ5nCdbLxGu05UlFO9kxGo3LmOw49zyAnFkmUtOKunFC9v6grEjX36aRdgzBNRLIMW-WkyQ2E6s"/>
+</div>
+<div class="space-y-2">
+<h3 class="font-headline-md text-primary">Inner Sanctuary</h3>
+<p class="font-body-md text-on-surface-variant">Guided by Marcus V. • 15 min</p>
+</div>
+</div>
+<div class="pt-8 flex items-center gap-4">
+<button class="w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="flex-1 h-1 bg-outline-variant rounded-full overflow-hidden">
+<div class="w-1/3 h-full bg-primary"></div>
+</div>
+</div>
+</div>
+<!-- Reading Section -->
+<section class="md:col-span-12 mt-section-gap">
+<div class="flex justify-between items-end mb-8">
+<div class="space-y-1">
+<h2 class="font-headline-lg text-primary">Morning Reflection</h2>
+<p class="font-body-md text-on-surface-variant">Wisdom for your path today</p>
+</div>
+<button class="text-primary font-label-md border-b border-primary pb-1 hover:opacity-60 transition-opacity">READ ARCHIVE</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-tertiary-fixed p-8 rounded-[2rem] space-y-6 hover:bg-tertiary-fixed-dim transition-colors cursor-pointer group">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-tertiary opacity-40" data-icon="format_quote">format_quote</span>
+<span class="font-label-sm text-on-tertiary-fixed-variant">5 MIN READ</span>
+</div>
+<h4 class="font-headline-md text-tertiary leading-snug">The Art of Noticing Small Things</h4>
+<p class="font-body-md text-on-tertiary-fixed-variant line-clamp-3">In the rush to achieve the big goals, we often overlook the subtle miracles of the present moment...</p>
+<div class="pt-4 flex items-center gap-2 text-tertiary font-label-md">
+<span>Read more</span>
+<span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform" data-icon="arrow_outward">arrow_outward</span>
+</div>
+</div>
+<div class="md:col-span-2 relative rounded-[2rem] overflow-hidden min-h-[300px] flex items-center p-12 group">
+<div class="absolute inset-0 z-0">
+<img alt="Calm scenery" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2000ms]" data-alt="vast still lake at dawn with mirror-like reflections and a soft pastel sky in shades of peach and lavender" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu4FIA92spbBLtQb0mDq7NtsicezShhdjOp5Lod-KprvCBpeC559r8hRD_gru16fQb-SkOq-sraZzp3DemZPuDNVkfyxPmn86M05kbPj542WduqliIP6VDYbHQOZ0OSZT1Y34iu0F6sy1UB7XpcE4tKjQVSWgYyxJ7EABX8o-I2PJD_QeSnu8wK7rKI6axcTVCtkk3rFFT_dM7pOtwKAEn4oY-ZFRgizWeI50Kf6srBpBv200i-4WtYFbkGcPFG84w3HmzP3cvuSQ"/>
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-[2px]"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-md space-y-6">
+<h4 class="font-headline-lg text-white">Cultivating the Internal Garden</h4>
+<p class="text-white/80 font-body-lg">Explore the relationship between our environment and our mental clarity.</p>
+<button class="bg-white text-primary px-8 py-3 rounded-full font-label-md hover:bg-stone-100 transition-colors">CONTINUE READING</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Weekly Progress Summary -->
+<section class="mt-section-gap bg-surface-container-lowest rounded-[2.5rem] p-12 border border-stone-50 shadow-[0_20px_50px_rgba(0,0,0,0.02)]">
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="relative w-40 h-40 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-high" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-secondary transition-all duration-1000" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-dasharray="440" stroke-dashoffset="110" stroke-width="4"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-headline-md text-primary">75%</span>
+<span class="font-label-sm text-secondary">WEEKLY</span>
+</div>
+</div>
+<div class="flex-1 space-y-4">
+<h3 class="font-headline-md text-primary">Your Practice is Taking Root</h3>
+<p class="font-body-md text-on-surface-variant max-w-xl">You've completed 4 sessions this week. Consitency is the seed of tranquility. Every breath is a step forward on your path.</p>
+<div class="flex gap-4 pt-4">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container border-2 border-white flex items-center justify-center"><span class="material-symbols-outlined text-xs" data-icon="check">check</span></div>
+<div class="w-8 h-8 rounded-full bg-secondary-container border-2 border-white flex items-center justify-center"><span class="material-symbols-outlined text-xs" data-icon="check">check</span></div>
+<div class="w-8 h-8 rounded-full bg-secondary-container border-2 border-white flex items-center justify-center"><span class="material-symbols-outlined text-xs" data-icon="check">check</span></div>
+<div class="w-8 h-8 rounded-full bg-secondary-container border-2 border-white flex items-center justify-center"><span class="material-symbols-outlined text-xs" data-icon="check">check</span></div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-white"></div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-white"></div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-white"></div>
+</div>
+<span class="font-label-md text-secondary">4 of 7 Days Active</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 bg-stone-50/90 backdrop-blur-lg rounded-t-[2rem] border-t border-stone-100 shadow-[0_-10px_40px_rgba(27,59,90,0.03)] md:hidden">
+<a class="flex flex-col items-center justify-center text-blue-900 scale-110 transition-transform duration-700" href="#">
+<span class="material-symbols-outlined" data-icon="wb_sunny">wb_sunny</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Today</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 opacity-60 hover:text-emerald-800 transition-all duration-700" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Journal</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 opacity-60 hover:text-emerald-800 transition-all duration-700" href="#">
+<span class="material-symbols-outlined" data-icon="Grain">grain</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Path</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 opacity-60 hover:text-emerald-800 transition-all duration-700" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Growth</span>
+</a>
+</nav>
+</body></html>

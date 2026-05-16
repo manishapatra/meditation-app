@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stillness — Find Your Path</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;1,400&amp;family=Manrope:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "primary-container": "#1b3b5a",
+                        "secondary-fixed-dim": "#bdcab9",
+                        "surface-container-low": "#f5f3f3",
+                        "tertiary": "#26231e",
+                        "secondary": "#556254",
+                        "on-surface-variant": "#43474d",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#3e4a3d",
+                        "primary-fixed": "#d1e4ff",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1b1c1c",
+                        "tertiary-fixed-dim": "#cbc6bd",
+                        "on-secondary-fixed": "#131e13",
+                        "on-secondary-container": "#5a6658",
+                        "on-primary-container": "#87a5ca",
+                        "tertiary-container": "#3b3933",
+                        "on-primary-fixed-variant": "#2a4968",
+                        "surface-tint": "#436182",
+                        "surface-container-high": "#eae8e7",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c3c6ce",
+                        "on-background": "#1b1c1c",
+                        "inverse-surface": "#303030",
+                        "inverse-primary": "#abc9ef",
+                        "surface-dim": "#dbd9d9",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#abc9ef",
+                        "inverse-on-surface": "#f2f0f0",
+                        "background": "#fbf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#fbf9f8",
+                        "surface": "#fbf9f8",
+                        "on-tertiary-container": "#a7a29a",
+                        "on-tertiary-fixed-variant": "#494640",
+                        "secondary-fixed": "#d9e6d5",
+                        "on-primary-fixed": "#001d35",
+                        "tertiary-fixed": "#e7e2d9",
+                        "surface-variant": "#e4e2e2",
+                        "outline": "#73777e",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#1d1b16",
+                        "primary": "#002542",
+                        "surface-container-highest": "#e4e2e2",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#d6e3d2",
+                        "surface-container": "#efeded"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin-mobile": "24px",
+                        "margin-desktop": "64px",
+                        "gutter": "16px",
+                        "section-gap": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Noto Serif"],
+                        "headline-lg": ["Noto Serif"],
+                        "label-sm": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "headline-xl": ["Noto Serif"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .ethereal-bg {
+            background: radial-gradient(circle at 10% 20%, rgba(215, 230, 245, 0.4) 0%, rgba(251, 249, 248, 1) 90%);
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 2px;
+            cursor: pointer;
+            background: #d1e4ff;
+            border-radius: 1rem;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #002542;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -9px;
+            box-shadow: 0 0 15px rgba(27, 59, 90, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col items-center selection:bg-primary-fixed">
+<!-- Navigation Shell (Suppressed for Linear Onboarding Flow per Design Mandate) -->
+<main class="w-full max-w-4xl px-margin-mobile md:px-margin-desktop py-section-gap flex flex-col items-center">
+<!-- Header Section -->
+<header class="text-center mb-12 space-y-4">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-container-low mb-4 shadow-sm">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="self_improvement">self_improvement</span>
+</div>
+<h1 class="font-headline-xl text-primary">Discover Your Inner Path</h1>
+<p class="font-body-lg text-secondary max-w-xl mx-auto italic">
+                “Yoga is the journey of the self, through the self, to the self.”
+            </p>
+</header>
+<!-- Assessment Progress -->
+<div class="w-full max-w-md mb-12">
+<div class="flex justify-between items-end mb-2">
+<span class="font-label-sm text-outline uppercase">Alignment Progress</span>
+<span class="font-label-md text-primary">02 / 04</span>
+</div>
+<div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-1/2 h-full bg-primary-container transition-all duration-1000 ease-in-out"></div>
+</div>
+</div>
+<!-- Question Canvas -->
+<div class="w-full grid grid-cols-1 md:grid-cols-2 gap-gutter items-start">
+<!-- Question Left: Descriptive Content -->
+<div class="bg-surface-container-lowest p-10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-white/40 backdrop-blur-sm">
+<span class="font-label-sm text-secondary-container bg-secondary-fixed px-3 py-1 rounded-full mb-6 inline-block">The Soul's Inclination</span>
+<h2 class="font-headline-lg text-primary mb-6">How do you most naturally express your devotion?</h2>
+<p class="font-body-md text-on-surface-variant mb-8 leading-relaxed">
+                    Some find clarity through service and action, while others seek wisdom through deep study or emotional connection to the divine.
+                </p>
+<div class="relative h-64 w-full rounded-2xl overflow-hidden">
+<img alt="Serene meditation" class="absolute inset-0 w-full h-full object-cover" data-alt="Soft focused shot of a person meditating in a garden with warm dappled sunlight and hazy natural background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGH1nwFZKjxtuLzkGjl4LEg8Ab6JIqcYvQPv2AqBc2N21vZgqq1h8xcRUlDzMMnC1HsrQ4SG_jZWhKeX7TPF4nUO99QPsRGfx086ZxNEncbPRv2PkNuwbwKTTxL73nBSbV-PaDcsqG0SuI6RleyKGctQTV1Pm-Jpv4wuop6K4nFkqcYWnh18O6D5zQPiwx1lUn6Zjz0ps60XFuf4zMcBVYk7J65-h7vZVG5csyPMDsoGDUCdokPAVCHiTnfOpe4FxS5bbFrEn-c-k"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
+</div>
+</div>
+<!-- Question Right: Interaction Controls -->
+<div class="space-y-gutter">
+<!-- Interaction 1: Choice Chips -->
+<div class="bg-surface-container-low p-8 rounded-[2rem] space-y-6">
+<h3 class="font-label-md text-primary uppercase">I feel most centered when I am...</h3>
+<div class="flex flex-wrap gap-3">
+<button class="bg-white hover:bg-primary-fixed-dim transition-colors text-primary px-6 py-3 rounded-full border border-outline-variant font-label-md">
+                            Serving Others
+                        </button>
+<button class="bg-primary text-on-primary px-6 py-3 rounded-full shadow-md font-label-md">
+                            In Quiet Study
+                        </button>
+<button class="bg-white hover:bg-primary-fixed-dim transition-colors text-primary px-6 py-3 rounded-full border border-outline-variant font-label-md">
+                            Chanting Mantras
+                        </button>
+<button class="bg-white hover:bg-primary-fixed-dim transition-colors text-primary px-6 py-3 rounded-full border border-outline-variant font-label-md">
+                            Observing Breath
+                        </button>
+</div>
+</div>
+<!-- Interaction 2: Gentle Slider -->
+<div class="bg-surface-container-low p-8 rounded-[2rem] space-y-8">
+<div class="flex justify-between items-center">
+<h3 class="font-label-md text-primary uppercase">Depth of Intuition</h3>
+<span class="material-symbols-outlined text-secondary" data-icon="lightbulb">lightbulb</span>
+</div>
+<div class="space-y-4">
+<input class="cursor-pointer" max="100" min="0" type="range" value="65"/>
+<div class="flex justify-between text-xs font-label-sm text-outline">
+<span>LOGICAL</span>
+<span>INTUITIVE</span>
+</div>
+</div>
+</div>
+<!-- Footer Navigation -->
+<div class="flex items-center justify-between pt-4">
+<button class="group flex items-center gap-2 text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="arrow_back">arrow_back</span>
+<span class="font-label-md">Previous</span>
+</button>
+<button class="bg-primary text-on-primary px-10 py-4 rounded-full shadow-lg hover:opacity-90 transition-all font-label-md flex items-center gap-3">
+                        Continue the Journey
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Reflection Cards (Bento style) -->
+<section class="w-full mt-24">
+<div class="text-center mb-12">
+<h3 class="font-headline-md text-primary">Your Current Resonance</h3>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Karma Path Card -->
+<div class="bg-tertiary-fixed p-6 rounded-3xl border border-tertiary-fixed-dim hover:scale-[1.02] transition-transform duration-500">
+<div class="w-10 h-10 rounded-full bg-on-tertiary-fixed/10 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-on-tertiary-fixed" data-icon="work_history">work_history</span>
+</div>
+<h4 class="font-headline-md text-on-tertiary-fixed text-lg mb-2">Karma</h4>
+<p class="text-xs font-label-sm text-on-tertiary-fixed-variant uppercase mb-4">The Path of Action</p>
+<div class="h-1 bg-on-tertiary-fixed/20 rounded-full w-full">
+<div class="h-full bg-on-tertiary-fixed rounded-full" style="width: 45%;"></div>
+</div>
+</div>
+<!-- Bhakti Path Card -->
+<div class="bg-secondary-fixed p-6 rounded-3xl border border-secondary-fixed-dim hover:scale-[1.02] transition-transform duration-500">
+<div class="w-10 h-10 rounded-full bg-on-secondary-fixed/10 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-on-secondary-fixed" data-icon="favorite" data-weight="fill" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<h4 class="font-headline-md text-on-secondary-fixed text-lg mb-2">Bhakti</h4>
+<p class="text-xs font-label-sm text-on-secondary-fixed-variant uppercase mb-4">The Path of Devotion</p>
+<div class="h-1 bg-on-secondary-fixed/20 rounded-full w-full">
+<div class="h-full bg-on-secondary-fixed rounded-full" style="width: 80%;"></div>
+</div>
+</div>
+<!-- Jnana Path Card -->
+<div class="bg-primary-fixed p-6 rounded-3xl border border-outline-variant hover:scale-[1.02] transition-transform duration-500">
+<div class="w-10 h-10 rounded-full bg-on-primary-fixed/10 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-on-primary-fixed" data-icon="menu_book">menu_book</span>
+</div>
+<h4 class="font-headline-md text-on-primary-fixed text-lg mb-2">Jnana</h4>
+<p class="text-xs font-label-sm text-on-primary-fixed-variant uppercase mb-4">The Path of Knowledge</p>
+<div class="h-1 bg-on-primary-fixed/20 rounded-full w-full">
+<div class="h-full bg-on-primary-fixed rounded-full" style="width: 30%;"></div>
+</div>
+</div>
+<!-- Raja Path Card -->
+<div class="bg-surface-container p-6 rounded-3xl border border-surface-container-high hover:scale-[1.02] transition-transform duration-500">
+<div class="w-10 h-10 rounded-full bg-on-surface/10 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-on-surface" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h4 class="font-headline-md text-on-surface text-lg mb-2">Raja</h4>
+<p class="text-xs font-label-sm text-on-surface-variant uppercase mb-4">The Path of Discipline</p>
+<div class="h-1 bg-on-surface/10 rounded-full w-full">
+<div class="h-full bg-on-surface rounded-full" style="width: 55%;"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Background Decoration -->
+<div class="fixed inset-0 -z-10 ethereal-bg pointer-events-none"></div>
+<div class="fixed top-[10%] right-[5%] w-96 h-96 bg-primary-fixed/20 rounded-full blur-[120px] -z-20"></div>
+<div class="fixed bottom-[10%] left-[5%] w-[32rem] h-[32rem] bg-secondary-fixed/30 rounded-full blur-[160px] -z-20"></div>
+</body></html>
