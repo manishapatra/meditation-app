@@ -41,25 +41,37 @@ export function Onboarding() {
   const handleConfirm = async () => {
     if (!user) return
     setSubmitting(true)
-    const now = new Date().toISOString()
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        path_resonance: resonance,
-        dominant_path: path,
-        obstacle_preferences: { categories: answers.q4 },
-        started_at: now,
-        updated_at: now,
-      })
-      .eq('id', user.id)
-    setSubmitting(false)
-    if (error) {
-      console.error(error)
-      alert('Could not save your path. Please try again.')
-      return
+    try {
+      console.log('[onboarding] saving profile…', { path, resonance })
+      const now = new Date().toISOString()
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({
+          path_resonance: resonance,
+          dominant_path: path,
+          obstacle_preferences: { categories: answers.q4 },
+          started_at: now,
+          updated_at: now,
+        })
+        .eq('id', user.id)
+        .select()
+      if (error) throw error
+      if (!data || data.length === 0) {
+        throw new Error(
+          'Update returned no rows. Row-Level Security may be blocking the write, or your profile row is missing.'
+        )
+      }
+      console.log('[onboarding] saved, refreshing profile…')
+      await refreshProfile()
+      console.log('[onboarding] navigating to /today')
+      navigate('/today', { replace: true })
+    } catch (err) {
+      console.error('[onboarding] save failed:', err)
+      const msg = err instanceof Error ? err.message : String(err)
+      alert(`Could not save your path:\n\n${msg}`)
+    } finally {
+      setSubmitting(false)
     }
-    await refreshProfile()
-    navigate('/today', { replace: true })
   }
 
   return (
