@@ -28,16 +28,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   const fetchProfile = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-    if (error) {
-      console.warn('fetchProfile error', error)
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle()
+      if (error) {
+        console.warn('[auth] fetchProfile error:', error)
+        setProfile(null)
+        return
+      }
+      setProfile((data as Profile | null) ?? null)
+    } catch (err) {
+      console.error('[auth] fetchProfile threw:', err)
       setProfile(null)
-    } else {
-      setProfile(data as Profile)
     }
   }, [])
 
@@ -46,13 +51,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session, fetchProfile])
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      setSession(data.session)
-      if (data.session) await fetchProfile(data.session.user.id)
-      setLoading(false)
-    })
+    let cancelled = false
 
-    const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const init = async () => {
+      try {
+        console.log('[auth] init: getSession…')
+        const { data } = await supabase.auth.getSession()
+        if (cancelled) return
+        console.log('[auth] init: session =', data.session ? 'present' : 'none')
+        setSession(data.session)
+        if (data.session) {
+          await fetchProfile(data.session.user.id)
+        }
+      } catch (err) {
+        console.error('[auth] init failed:', err)
+      } finally {
+        if (!cancelled) {
+          console.log('[auth] init: done, loading=false')
+          setLoading(false)
+        }
+      }
+    }
+
+    init()
+
+    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (cancelled) return
+      console.log('[auth] onAuthStateChange:', event)
       setSession(session)
       if (session) {
         await fetchProfile(session.user.id)
@@ -61,7 +86,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
 
-    return () => data.subscription.unsubscribe()
+    return () => {
+      cancelled = true
+      data.subscription.unsubscribe()
+    }
   }, [fetchProfile])
 
   const signIn = async (email: string) => {

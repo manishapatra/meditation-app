@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { TabBar } from './components/TabBar'
 import { useAuth } from './contexts/AuthContext'
+import { supabase } from './lib/supabase'
 import { Auth } from './screens/Auth'
 import { Growth } from './screens/Growth'
 import { Journal } from './screens/Journal'
@@ -9,9 +11,36 @@ import { Path } from './screens/Path'
 import { Today } from './screens/Today'
 
 function Loading() {
+  const [showHelp, setShowHelp] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setShowHelp(true), 5000)
+    return () => clearTimeout(t)
+  }, [])
+
+  const reset = async () => {
+    try {
+      await supabase.auth.signOut()
+    } catch {
+      /* ignore */
+    }
+    localStorage.clear()
+    window.location.reload()
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center text-muted">
-      Loading…
+    <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center text-muted">
+      <p>Loading…</p>
+      {showHelp && (
+        <div className="mt-10">
+          <p className="text-sm">Still loading? Something may be stuck.</p>
+          <button
+            onClick={reset}
+            className="mt-3 text-sm text-primary underline"
+          >
+            Sign out and reload
+          </button>
+        </div>
+      )}
     </div>
   )
 }
