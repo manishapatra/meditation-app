@@ -11,14 +11,28 @@ import {
   type Q3Choice,
   type Q4Choice,
 } from '../lib/pathScoring'
+import type { Gender } from '../types/database'
 
-const TOTAL_STEPS = 5
+const TOTAL_STEPS = 6
+
+interface Demographics {
+  fullName: string
+  age: string // free-text in UI; parsed to int on save
+  gender: Gender | null
+}
 
 export function Onboarding() {
   const { user, refreshProfile } = useAuth()
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
+
+  const [demographics, setDemographics] = useState<Demographics>({
+    fullName: '',
+    age: '',
+    gender: null,
+  })
+
   const [answers, setAnswers] = useState<OnboardingAnswers>({
     q1: null,
     q2: 50,
@@ -29,11 +43,20 @@ export function Onboarding() {
   const next = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS))
   const back = () => setStep((s) => Math.max(s - 1, 1))
 
+  const ageNum = Number(demographics.age)
+  const demographicsValid =
+    demographics.fullName.trim().length > 0 &&
+    Number.isInteger(ageNum) &&
+    ageNum >= 1 &&
+    ageNum <= 120 &&
+    demographics.gender !== null
+
   const canAdvance =
-    (step === 1 && !!answers.q1) ||
-    step === 2 ||
-    (step === 3 && answers.q3.length > 0) ||
-    (step === 4 && answers.q4.length > 0)
+    (step === 1 && demographicsValid) ||
+    (step === 2 && !!answers.q1) ||
+    step === 3 ||
+    (step === 4 && answers.q3.length > 0) ||
+    (step === 5 && answers.q4.length > 0)
 
   const resonance = scoreResonance(answers)
   const path = dominantPath(resonance)
@@ -42,11 +65,14 @@ export function Onboarding() {
     if (!user) return
     setSubmitting(true)
     try {
-      console.log('[onboarding] saving profile…', { path, resonance })
+      console.log('[onboarding] saving profile…', { path, demographics })
       const now = new Date().toISOString()
       const { data, error } = await supabase
         .from('profiles')
         .update({
+          full_name: demographics.fullName.trim(),
+          age: ageNum,
+          gender: demographics.gender,
           path_resonance: resonance,
           dominant_path: path,
           obstacle_preferences: { categories: answers.q4 },
@@ -80,30 +106,33 @@ export function Onboarding() {
 
       <div className="mt-10 flex-1">
         {step === 1 && (
+          <StepDemographics value={demographics} onChange={setDemographics} />
+        )}
+        {step === 2 && (
           <Step1
             value={answers.q1}
             onChange={(v) => setAnswers({ ...answers, q1: v })}
           />
         )}
-        {step === 2 && (
+        {step === 3 && (
           <Step2
             value={answers.q2}
             onChange={(v) => setAnswers({ ...answers, q2: v })}
           />
         )}
-        {step === 3 && (
+        {step === 4 && (
           <Step3
             value={answers.q3}
             onChange={(v) => setAnswers({ ...answers, q3: v })}
           />
         )}
-        {step === 4 && (
+        {step === 5 && (
           <Step4
             value={answers.q4}
             onChange={(v) => setAnswers({ ...answers, q4: v })}
           />
         )}
-        {step === 5 && <Result resonance={resonance} path={path} />}
+        {step === 6 && <Result resonance={resonance} path={path} />}
       </div>
 
       <div className="mt-8 flex items-center justify-between gap-4">
@@ -170,6 +199,75 @@ function QuestionHeader({
     <div>
       <h1 className="font-serif text-3xl text-primary leading-tight">{title}</h1>
       {subtitle && <p className="mt-3 text-muted">{subtitle}</p>}
+    </div>
+  )
+}
+
+function StepDemographics({
+  value,
+  onChange,
+}: {
+  value: Demographics
+  onChange: (v: Demographics) => void
+}) {
+  return (
+    <div>
+      <QuestionHeader
+        title="A few details to begin"
+        subtitle="Just to personalize your journey. You can change these later."
+      />
+      <div className="mt-8 space-y-6">
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-muted">
+            Name
+          </label>
+          <input
+            type="text"
+            value={value.fullName}
+            onChange={(e) => onChange({ ...value, fullName: e.target.value })}
+            className="mt-2 w-full border-b border-stone-300 bg-transparent py-3 text-lg outline-none focus:border-primary"
+            placeholder="Your name"
+          />
+        </div>
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-muted">
+            Age
+          </label>
+          <input
+            type="number"
+            min={1}
+            max={120}
+            inputMode="numeric"
+            value={value.age}
+            onChange={(e) => onChange({ ...value, age: e.target.value })}
+            className="mt-2 w-full border-b border-stone-300 bg-transparent py-3 text-lg outline-none focus:border-primary"
+            placeholder="—"
+          />
+        </div>
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-muted">
+            Gender
+          </label>
+          <div className="mt-3 flex gap-3">
+            {(['male', 'female'] as Gender[]).map((g) => {
+              const selected = value.gender === g
+              return (
+                <button
+                  key={g}
+                  onClick={() => onChange({ ...value, gender: g })}
+                  className={`flex-1 rounded-full border px-6 py-3 font-serif capitalize transition ${
+                    selected
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-stone-300 bg-white text-ink'
+                  }`}
+                >
+                  {g}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

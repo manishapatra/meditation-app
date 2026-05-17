@@ -3,6 +3,7 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { TabBar } from './components/TabBar'
 import { useAuth } from './contexts/AuthContext'
 import { supabase } from './lib/supabase'
+import { DeepAssessment } from './screens/DeepAssessment'
 import { Growth } from './screens/Growth'
 import { Journal } from './screens/Journal'
 import { Onboarding } from './screens/Onboarding'
@@ -116,6 +117,7 @@ function App() {
           <Route path="/journal" element={<Journal />} />
           <Route path="/path" element={<Path />} />
           <Route path="/growth" element={<Growth />} />
+          <Route path="/assessment" element={<DeepAssessment />} />
         </Route>
       </Route>
     </Routes>
