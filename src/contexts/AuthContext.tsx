@@ -11,16 +11,16 @@ import { supabase, withTimeout, TimeoutError } from '../lib/supabase'
 import type { Profile } from '../types/database'
 
 const AUTH_TIMEOUT_MS = 5000
-const INITIAL_SESSION_FALLBACK_MS = 5000
+const INITIAL_FALLBACK_MS = 10000
 
 interface AuthContextValue {
   user: User | null
   session: Session | null
   profile: Profile | null
   loading: boolean
+  authError: string | null
   refreshProfile: () => Promise<void>
-  signIn: (email: string) => Promise<{ error: string | null }>
-  signOut: () => Promise<void>
+  resetSession: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [authError, setAuthError] = useState<string | null>(null)
 
   const fetchProfile = useCallback(async (userId: string): Promise<boolean> => {
     try {
@@ -59,38 +60,74 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (session?.user) await fetchProfile(session.user.id)
   }, [session, fetchProfile])
 
+  const resetSession = useCallback(async () => {
+    try {
+      await supabase.auth.signOut()
+    } catch (err) {
+      console.warn('[auth] signOut on reset failed:', err)
+    }
+    // signOut → SIGNED_OUT event → state cleared.
+    // We then trigger a fresh anonymous sign-in.
+    const { error } = await supabase.auth.signInAnonymously()
+    if (error) {
+      console.error('[auth] anonymous re-sign-in failed:', error)
+      setAuthError(error.message)
+    }
+  }, [])
+
   useEffect(() => {
     let cancelled = false
-    let receivedInitial = false
+    let initialHandled = false
 
-    // Subscribe first. supabase-js fires an INITIAL_SESSION event once it has
-    // determined initial state — including processing any ?code=… in the URL
-    // from a magic-link redirect. We use that event as the signal that
-    // loading=false is safe.
+    const ensureAnonymousSession = async () => {
+      console.log('[auth] no session — signing in anonymously…')
+      const { error } = await supabase.auth.signInAnonymously()
+      if (error) {
+        console.error('[auth] anonymous sign-in failed:', error)
+        if (!cancelled) {
+          setAuthError(error.message)
+          setLoading(false)
+        }
+      }
+      // On success, the SIGNED_IN event handler below will flip loading=false.
+    }
+
     const { data } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (cancelled) return
-      console.log('[auth] onAuthStateChange:', event, newSession ? '(with session)' : '(no session)')
+      console.log(
+        '[auth] onAuthStateChange:',
+        event,
+        newSession ? '(with session)' : '(no session)'
+      )
       setSession(newSession)
       if (newSession) {
         await fetchProfile(newSession.user.id)
       } else {
         setProfile(null)
       }
+
       if (event === 'INITIAL_SESSION') {
-        receivedInitial = true
-        console.log('[auth] INITIAL_SESSION received, loading=false')
+        initialHandled = true
+        if (newSession) {
+          setLoading(false)
+        } else {
+          ensureAnonymousSession()
+        }
+      } else if (event === 'SIGNED_IN' && initialHandled) {
+        // Anonymous sign-in (or post-init sign-in) completed.
         setLoading(false)
       }
     })
 
-    // Belt-and-suspenders: if INITIAL_SESSION never fires (a supabase-js bug
-    // or a hung internal call), give up after a few seconds and unblock the UI.
+    // Belt-and-suspenders fallback — if neither INITIAL_SESSION nor the
+    // subsequent SIGNED_IN event flips loading off within 10s, release the UI
+    // anyway so the user is not stuck.
     const fallback = setTimeout(() => {
-      if (!receivedInitial && !cancelled) {
-        console.warn('[auth] INITIAL_SESSION never fired — releasing loading')
+      if (!cancelled) {
+        console.warn('[auth] init fallback fired — releasing loading')
         setLoading(false)
       }
-    }, INITIAL_SESSION_FALLBACK_MS)
+    }, INITIAL_FALLBACK_MS)
 
     return () => {
       cancelled = true
@@ -99,18 +136,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [fetchProfile])
 
-  const signIn = async (email: string) => {
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin },
-    })
-    return { error: error?.message ?? null }
-  }
-
-  const signOut = async () => {
-    await supabase.auth.signOut()
-  }
-
   return (
     <AuthContext.Provider
       value={{
@@ -118,9 +143,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         profile,
         loading,
+        authError,
         refreshProfile,
-        signIn,
-        signOut,
+        resetSession,
       }}
     >
       {children}
