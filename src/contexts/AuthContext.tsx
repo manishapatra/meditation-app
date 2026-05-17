@@ -11,6 +11,7 @@ import { supabase, withTimeout, TimeoutError } from '../lib/supabase'
 import type { Profile } from '../types/database'
 
 const AUTH_TIMEOUT_MS = 5000
+const INITIAL_SESSION_FALLBACK_MS = 5000
 
 interface AuthContextValue {
   user: User | null
@@ -29,18 +30,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  /**
-   * Fetches the user's profile row, bounded by AUTH_TIMEOUT_MS.
-   * Returns true on success, false on timeout/error so callers can recover.
-   */
   const fetchProfile = useCallback(async (userId: string): Promise<boolean> => {
     try {
       const { data, error } = await withTimeout(
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle(),
+        supabase.from('profiles').select('*').eq('id', userId).maybeSingle(),
         AUTH_TIMEOUT_MS,
         'fetchProfile'
       )
@@ -68,68 +61,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false
+    let receivedInitial = false
 
-    const init = async () => {
-      let initialSession: Session | null = null
-      try {
-        console.log('[auth] init: getSession…')
-        const { data } = await withTimeout(
-          supabase.auth.getSession(),
-          AUTH_TIMEOUT_MS,
-          'getSession'
-        )
-        if (cancelled) return
-        initialSession = data.session
-        console.log(
-          '[auth] init: session =',
-          initialSession ? 'present' : 'none'
-        )
-        setSession(initialSession)
-      } catch (err) {
-        if (err instanceof TimeoutError) {
-          console.error('[auth] timeout: getSession — proceeding as signed-out')
-        } else {
-          console.error('[auth] getSession failed:', err)
-        }
-        // Fire-and-forget signout to clear any half-corrupt local state.
-        supabase.auth.signOut().catch(() => {})
-        if (!cancelled) setSession(null)
-      }
-
-      if (initialSession && !cancelled) {
-        const ok = await fetchProfile(initialSession.user.id)
-        if (!ok && !cancelled) {
-          // Session was valid but profile fetch broke. Bail to fresh sign-in.
-          console.warn(
-            '[auth] profile unavailable for current session — signing out to recover'
-          )
-          supabase.auth.signOut().catch(() => {})
-          setSession(null)
-          setProfile(null)
-        }
-      }
-
-      if (!cancelled) {
-        console.log('[auth] init: done, loading=false')
-        setLoading(false)
-      }
-    }
-
-    init()
-
-    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Subscribe first. supabase-js fires an INITIAL_SESSION event once it has
+    // determined initial state — including processing any ?code=… in the URL
+    // from a magic-link redirect. We use that event as the signal that
+    // loading=false is safe.
+    const { data } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (cancelled) return
-      console.log('[auth] onAuthStateChange:', event)
-      setSession(session)
-      if (session) {
-        await fetchProfile(session.user.id)
+      console.log('[auth] onAuthStateChange:', event, newSession ? '(with session)' : '(no session)')
+      setSession(newSession)
+      if (newSession) {
+        await fetchProfile(newSession.user.id)
       } else {
         setProfile(null)
       }
+      if (event === 'INITIAL_SESSION') {
+        receivedInitial = true
+        console.log('[auth] INITIAL_SESSION received, loading=false')
+        setLoading(false)
+      }
     })
+
+    // Belt-and-suspenders: if INITIAL_SESSION never fires (a supabase-js bug
+    // or a hung internal call), give up after a few seconds and unblock the UI.
+    const fallback = setTimeout(() => {
+      if (!receivedInitial && !cancelled) {
+        console.warn('[auth] INITIAL_SESSION never fired — releasing loading')
+        setLoading(false)
+      }
+    }, INITIAL_SESSION_FALLBACK_MS)
 
     return () => {
       cancelled = true
+      clearTimeout(fallback)
       data.subscription.unsubscribe()
     }
   }, [fetchProfile])

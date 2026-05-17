@@ -1,12 +1,20 @@
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 export function Auth() {
-  const { signIn } = useAuth()
+  const { signIn, user, loading } = useAuth()
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // If the user becomes signed-in while sitting on this screen (e.g. their
+  // magic-link callback finished processing after the redirect), bounce away.
+  useEffect(() => {
+    if (!loading && user) navigate('/', { replace: true })
+  }, [user, loading, navigate])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
