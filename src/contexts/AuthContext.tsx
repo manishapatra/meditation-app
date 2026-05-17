@@ -7,8 +7,10 @@ import {
   type ReactNode,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import { supabase, withTimeout, TimeoutError } from '../lib/supabase'
 import type { Profile } from '../types/database'
+
+const AUTH_TIMEOUT_MS = 5000
 
 interface AuthContextValue {
   user: User | null
@@ -27,22 +29,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchProfile = useCallback(async (userId: string) => {
+  /**
+   * Fetches the user's profile row, bounded by AUTH_TIMEOUT_MS.
+   * Returns true on success, false on timeout/error so callers can recover.
+   */
+  const fetchProfile = useCallback(async (userId: string): Promise<boolean> => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle()
+      const { data, error } = await withTimeout(
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle(),
+        AUTH_TIMEOUT_MS,
+        'fetchProfile'
+      )
       if (error) {
         console.warn('[auth] fetchProfile error:', error)
         setProfile(null)
-        return
+        return false
       }
       setProfile((data as Profile | null) ?? null)
+      return true
     } catch (err) {
-      console.error('[auth] fetchProfile threw:', err)
+      if (err instanceof TimeoutError) {
+        console.error('[auth] timeout: fetchProfile')
+      } else {
+        console.error('[auth] fetchProfile threw:', err)
+      }
       setProfile(null)
+      return false
     }
   }, [])
 
@@ -54,22 +70,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false
 
     const init = async () => {
+      let initialSession: Session | null = null
       try {
         console.log('[auth] init: getSession…')
-        const { data } = await supabase.auth.getSession()
+        const { data } = await withTimeout(
+          supabase.auth.getSession(),
+          AUTH_TIMEOUT_MS,
+          'getSession'
+        )
         if (cancelled) return
-        console.log('[auth] init: session =', data.session ? 'present' : 'none')
-        setSession(data.session)
-        if (data.session) {
-          await fetchProfile(data.session.user.id)
-        }
+        initialSession = data.session
+        console.log(
+          '[auth] init: session =',
+          initialSession ? 'present' : 'none'
+        )
+        setSession(initialSession)
       } catch (err) {
-        console.error('[auth] init failed:', err)
-      } finally {
-        if (!cancelled) {
-          console.log('[auth] init: done, loading=false')
-          setLoading(false)
+        if (err instanceof TimeoutError) {
+          console.error('[auth] timeout: getSession — proceeding as signed-out')
+        } else {
+          console.error('[auth] getSession failed:', err)
         }
+        // Fire-and-forget signout to clear any half-corrupt local state.
+        supabase.auth.signOut().catch(() => {})
+        if (!cancelled) setSession(null)
+      }
+
+      if (initialSession && !cancelled) {
+        const ok = await fetchProfile(initialSession.user.id)
+        if (!ok && !cancelled) {
+          // Session was valid but profile fetch broke. Bail to fresh sign-in.
+          console.warn(
+            '[auth] profile unavailable for current session — signing out to recover'
+          )
+          supabase.auth.signOut().catch(() => {})
+          setSession(null)
+          setProfile(null)
+        }
+      }
+
+      if (!cancelled) {
+        console.log('[auth] init: done, loading=false')
+        setLoading(false)
       }
     }
 
