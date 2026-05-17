@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { GHQ_ITEMS, type GHQItem } from '../data/ghqQuestions'
 import { VPI_ITEMS, VPI_SCALE, type VPIItem } from '../data/vpiQuestions'
-import { supabase } from '../lib/supabase'
+import { describeError, supabase } from '../lib/supabase'
 
 const GHQ_PER_PAGE = 6
 const VPI_PER_PAGE = 8
@@ -89,8 +89,8 @@ export function DeepAssessment() {
       await refreshProfile()
       navigate('/path', { replace: true })
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err)
-      alert(`Could not save your assessment:\n\n${msg}`)
+      console.error('[assessment] save failed:', err)
+      alert(`Could not save your assessment:\n\n${describeError(err)}`)
     } finally {
       setSubmitting(false)
     }

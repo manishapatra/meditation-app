@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { supabase } from '../lib/supabase'
+import { describeError, supabase } from '../lib/supabase'
 import {
   PATH_DESCRIPTIONS,
   dominantPath,
@@ -93,8 +93,7 @@ export function Onboarding() {
       navigate('/today', { replace: true })
     } catch (err) {
       console.error('[onboarding] save failed:', err)
-      const msg = err instanceof Error ? err.message : String(err)
-      alert(`Could not save your path:\n\n${msg}`)
+      alert(`Could not save your path:\n\n${describeError(err)}`)
     } finally {
       setSubmitting(false)
     }

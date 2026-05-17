@@ -22,6 +22,31 @@ export class TimeoutError extends Error {
   }
 }
 
+/**
+ * Best-effort human-readable description of any thrown value. Handles plain
+ * Errors, Supabase PostgrestError-shaped objects ({ message, code, details,
+ * hint }), and unknown values.
+ */
+export function describeError(err: unknown): string {
+  if (err instanceof Error) return err.message
+  if (err && typeof err === 'object') {
+    const e = err as Record<string, unknown>
+    if (typeof e.message === 'string') {
+      const code = typeof e.code === 'string' ? ` (code ${e.code})` : ''
+      const hint = typeof e.hint === 'string' && e.hint ? `\nHint: ${e.hint}` : ''
+      const details =
+        typeof e.details === 'string' && e.details ? `\nDetails: ${e.details}` : ''
+      return `${e.message}${code}${details}${hint}`
+    }
+    try {
+      return JSON.stringify(err)
+    } catch {
+      return String(err)
+    }
+  }
+  return String(err)
+}
+
 export function withTimeout<T>(
   promise: PromiseLike<T>,
   ms: number,
